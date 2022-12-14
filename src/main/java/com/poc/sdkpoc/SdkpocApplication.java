@@ -26,18 +26,18 @@ public class SdkpocApplication {
 		log.info("Application is running");
 	}
 
-	@Bean
-	public CommandLineRunner commandLineRunner() {
-		return s -> {
-			RCXToken rcxToken = null;
-			try {
-				rcxToken = authHandler.login();
-			} catch (Exception e) {
-				System.out.println("Exception " + e);
-			}
-
-			log.info("Token " + rcxToken.getToken());
-		};
-	}
+//	@Bean
+//	public CommandLineRunner commandLineRunner() {
+//		return s -> {
+//			RCXToken rcxToken = null;
+//			try {
+//				rcxToken = authHandler.login();
+//			} catch (Exception e) {
+//				System.out.println("Exception " + e);
+//			}
+//
+//			log.info("Token " + rcxToken.getToken());
+//		};
+//	}
 
 }
