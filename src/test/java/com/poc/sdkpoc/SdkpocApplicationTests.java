@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,27 +48,27 @@ class SdkpocApplicationTests {
 	@BeforeAll
 	static void StartServer() throws IOException {
 		mockWebServer = new MockWebServer();
-//		mockWebServer.start();
-		mockWebServer.start(3000);
+		mockWebServer.start(1290);
+//		mockWebServer.start(3000);
 	}
 
 	@AfterAll
 	static void ShutdownServer() throws IOException {
 		mockWebServer.shutdown();
 	}
+
 	@BeforeEach
 	void setupMockWebServer() {
-		mockWebServer = new MockWebServer();
-
 		RcxConnectionProperties properties = new RcxConnectionProperties();
-//		properties.setBaseUrl(mockWebServer.url("/").url().toString());
-		properties.setBaseUrl("http://crud:3000");
-//		properties.setPath("/api/v1/");
+		properties.setBaseUrl(mockWebServer.url("/").url().toString());
+//		properties.setBaseUrl("http://crud:3000");
+		properties.setPath("api/v1/");
 		properties.setUsername("test/admin");
 		properties.setPassword("wint00l$");
 
 		objectMapper = new ObjectMapper();
-		activityWebClient = WebClient.create("http://localhost:3000/api/v1/");
+//		activityWebClient = WebClient.create("http://localhost:3000/api/v1/");
+		activityWebClient = WebClient.create();
 		exceptionMapper = new ExceptionMapper(objectMapper);
 		rcxAuth = new RcxAuth();
 
@@ -77,25 +78,25 @@ class SdkpocApplicationTests {
 	}
 
 	@Test
-	void demo() throws InterruptedException {
+	void demo() throws JsonProcessingException, InterruptedException {
 
-		RCXToken rcxToken  = new RCXToken();
+		RCXToken rcxToken = new RCXToken();
 		rcxToken.setToken("asfdasdfasdfasdjasbhdfgwyerq3e219374213g2bfhe");
 
 		MockResponse mockResponse = new MockResponse();
 
 		mockResponse.setResponseCode(200)
-				.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-				.setBody(toJson(rcxToken));
+				.setBody(objectMapper.writeValueAsString(rcxToken))
+				.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
 		mockWebServer.enqueue(mockResponse);
 
 		authHandler.login();
 
-		RecordedRequest request = mockWebServer.takeRequest();
+        RecordedRequest request = mockWebServer.takeRequest();
 
-		assertThat(request.getMethod()).isEqualTo("POST");
-
+        assertThat(request.getMethod()).isEqualTo("POST");
 	}
+
 
 }
